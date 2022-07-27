@@ -30,3 +30,4 @@ class urunler(models.Model):
     def __str__(self):
         return self.urun_adi
 
+

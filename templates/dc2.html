@@ -19,6 +19,7 @@
         {% for item in dcData %}
             <option value="{{ item.id }}">   {{ item.name }} ({{ item.location }})</option>
         {% endfor %}
+        <option value="yeniEkle">Yeni Veri Merkezi Ekle</option>
     </select>
 
     <button type="submit">Gönder</button>
@@ -28,8 +29,31 @@
 <br>
 <br>
 
+<!--<h1>TEST</h1>-->
 
-<table>
+
+{% if showForm == True %}
+    <form action="/add-new-dc/" method="POST">
+        {% csrf_token %}
+        <label>DC Adı</label>
+        <input type="text" name="dcname">
+        <label>Lokasyon</label>
+        <input type="text" name="dclocation">
+        <label>Tip</label>
+        <select name="type">
+            <option value="internal">internal</option>
+            <option value="external">external</option>
+        </select>
+        <label>Domain</label>
+        <select name="domain">
+            <option value="mobil">mobil</option>
+            <option value="fixed">fixed</option>
+            <option value="broadband">broadBand</option>
+        </select>
+    <button type="submit">Ekle</button>
+    </form>
+{% else %}
+    <table>
     <thead>
     <th>Id</th>
     <th>Adı</th>
@@ -66,6 +90,11 @@
     {#    {% endfor %}#}
     </tbody>
 </table>
+{% endif %}
+
+
+
+
 </body>
 
 
