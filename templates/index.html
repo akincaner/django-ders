@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Türk Telekom</title>
+</head>
+
+
+<body>
+
+<form action="#" method="post">
+{% csrf_token %}
+
+    <select name="dc">
+        {% for item in dcData %}
+            <option value="{{ item.id }}">   {{ item.name }} ({{ item.location }})</option>
+        {% endfor %}
+    </select>
+
+    <button type="submit">Gönder</button>
+</form>
+
+
+<br>
+<br>
+<br>
+<br>
+<br>
+
+
+<table>
+    <thead>
+        <th>Id</th>
+        <th>Adı</th>
+        <th>Lokasyon</th>
+        <th>Domain</th>
+        <th>Tip</th>
+    </thead>
+    <tbody>
+     {% for item in dcData %}
+        <tr>
+            <td>{{ item.id }}</td>
+            <td>{{ item.name }}</td>
+            <td>{{ item.location }}</td>
+            <td>{{ item.domain }}</td>
+            <td>{{ item.tip }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+</body>
+
+
+</html>
