@@ -36,7 +36,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'modules.orders',
-    'modules.datacenter'
+    'modules.datacenter',
+    'modules.portstatus'
 
 ]
 
@@ -77,8 +78,12 @@ WSGI_APPLICATION = 'djangoDers.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'django_ders',
+        'USER': 'django_ders',
+        'PASSWORD': '12341234',
+        # 'HOST': '192.168.1.0',
+        # 'PORT':'1433'
     }
 }
 
