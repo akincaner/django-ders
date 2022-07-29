@@ -1,0 +1,27 @@
+{% extends "masterpage.html" %}
+
+
+{% block ContentHolder %}
+
+
+    <div class="container">
+        <h3>Döküman Yükle</h3>
+        <form action="#" method="post" enctype="multipart/form-data">
+            {% csrf_token %}
+            <label for="dosya">Last Name</label>
+            <input type="file" id="dosya" name="dosya" placeholder="Lütfen Dosya Seçiniz" multiple>
+
+
+             <label for="subject">Subject</label>
+            <textarea id="subject" name="subject" placeholder="Açıklam Yazınız" style="height:200px"></textarea>
+
+
+            <input type="submit" value="Gönder">
+        </form>
+
+
+    </div>
+
+
+
+{% endblock ContentHolder %}

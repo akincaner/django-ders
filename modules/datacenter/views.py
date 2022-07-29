@@ -1,19 +1,10 @@
-import json
 from django.http import HttpResponse
 from django.shortcuts import render
 from modules.datacenter.models import dc
-from django.core.serializers.json import DjangoJSONEncoder
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
-from django.contrib.auth import authenticate, login as do_login
-from django.views.decorators.csrf import csrf_exempt
 from django.contrib.sessions.models import Session
+from modules.masterpage.views import json_response
 
-
-def json_response(status=False, message="", data={}):
-    JsonData = {"status": status, "message": message, "data": data}
-    JsonData = json.dumps(JsonData, cls=DjangoJSONEncoder)
-    return HttpResponse(JsonData)
 
 
 def stringManuplation(string):
@@ -33,7 +24,7 @@ def showDc(request):
         'dcData': dc_data,
         'filterData': postData
     }
-    return render(request, 'index.html', context)
+    return render(request, 'datacener/index.html', context)
 
 
 def addDc(request):
@@ -51,7 +42,7 @@ def addDc(request):
         'filterData': filterData,
         'showForm': showForm
     }
-    return render(request, 'dc2.html', context)
+    return render(request, 'datacener/dc2.html', context)
 
 
 def addNewDc(request):
@@ -127,38 +118,3 @@ def dcApi(request):
 
     return json_response(status=status, message=message, data=data)
 
-
-@csrf_exempt
-def login(request):
-    data = {}
-    username = request.POST.get('username')
-    password = request.POST.get('password')
-    print(username)
-    print(password)
-    try:
-        remoteUser = User.objects.get(username=username)
-        authenticatedUser = authenticate(username=username, password=password)
-        if authenticatedUser is None:
-            return json_response(status=False, message="Şifreniz Hatalı")
-        if authenticatedUser.is_active:
-            authenticatedUser.backend = "django.contrib.auth.backends.ModelBackend"
-            do_login(request, authenticatedUser)
-            groups = authenticatedUser.groups.all()
-            userGroups = []
-            for grp in groups:
-                userGroups.append(grp.name)
-
-            data = {
-                'id': str(authenticatedUser.id),
-                'token': str(request.session.session_key),
-                'groups': userGroups
-            }
-            return json_response(status=True, data=data)
-        else:
-            return json_response(status=False, message="Kullanıcı Etkin Değil")
-    except ObjectDoesNotExist:
-        return json_response(status=False, message="Kullanıcı Adı Hatalı")
-    except Exception as e:
-        print(e)
-
-    return json_response()

@@ -15,13 +15,17 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-
+from django.conf.urls.static import static
+from django.conf import settings
 
 # http://127.0.0.1:8000/
 
 urlpatterns = [
-    path('', include('modules.datacenter.urls')),
+    path('',include('modules.masterpage.urls')),
+    path('dc/', include('modules.datacenter.urls')),
     path('orders/', include('modules.orders.urls')),
     path('sw/', include('modules.portstatus.urls')),
     path('admin/', admin.site.urls),
+
 ]
+urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
