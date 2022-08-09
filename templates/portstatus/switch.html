@@ -43,11 +43,42 @@
     </div>
 
 
+    {#  Django dan çekilen veri ile Select değişimi  #}
     <script>
+        var swPortTable = "{{ swporttabledata|safe }}";
+        var jsonSwPortTable = JSON.parse(swPortTable.replaceAll("'", '"'));
+        $(document).on('change', '#swname', function (event) {
+            var filteredPortList = jsonSwPortTable.filter((value) => {
+                return parseInt(value.sw_id) === parseInt(event.target.value);
+                // == => type kontrolü yapmaz örnek:  1 == "1" => true
+                // === => type kontrolü yapar örnek: 1 === "1" => false
+               // if (value.sw_id == event.target.value) {
+               //     return true;
+               // }
+            });
+            if (filteredPortList.length > 0) {
+                var html = '<option value="0">Port Seçiniz</option>';
+                // Örnek 1 For Dögüsü
+               // for (var item of filteredPortList) {
+               //     html += '<option value="' + item.id + '">' + item.port + '</option>';
+               // }
+                // Örnek 2 For Dögüsü
+                filteredPortList.forEach(function (item) {
+                    html += '<option value="' + item.id + '">' + item.port + '</option>';
+                })
+
+                $('#portname').html(html);
+                portArea.style.display = 'block';
+            } else {
+                portArea.style.display = 'none';
+            }
+        });
+
+    </script>
+
+    {#  ajax ile apiden çekilen veri ile Select değişimi  #}
+   {% comment %} <script>
         var portArea = $('#portArea')[0];
-        {#var swPortTable = "{{ swporttabledata|safe }}";#}
-        {#var jsonScwPortTable = JSON.parse(swPortTable);#}
-        {#console.log(jsonScwPortTable);#}
         $(document).on('change', '#swname', function (event) {
 
             var request = $.ajax({
@@ -58,20 +89,20 @@
                 }
             })
             request.done(function (response) {
-                console.log(response);
                 var jsonResponse = JSON.parse(response);
-                console.log(jsonResponse);
                 if (jsonResponse.status == true) {
-                    console.log(jsonResponse.data);
                     var protData = jsonResponse.data;
+                    // 1.Ekleme Yöntemi için :
+                    // $('#portname').empty().append($('<option>').val('0').text('Port seçiniz'));
+                    // 2. Yöntem İçin :
+                    var html = '<option value="0">Port Seçiniz</option>';
                     for (var item of protData) {
-                        console.log(item);
-                        var html = '<option value="'+ item.id+'">'+ item.port +'</option>';
-                        console.log(html);
-                        var portSelect =  $('#portname')[0];
-                        console.log(portSelect.children);
-                        portSelect.append(html);
+                        // 1.Eklem Yöntemi :
+                        // $('#portname').append($('<option>').val(item.id).text(item.port));
+                        //2. Yöntem
+                        html += '<option value="' + item.id + '">' + item.port + '</option>';
                     }
+                    $('#portname').html(html);
                     portArea.style.display = 'block';
                 } else {
                     portArea.style.display = 'none';
@@ -80,7 +111,8 @@
 
 
         });
-    </script>
+    </script>{% endcomment %}
+
 
 
 

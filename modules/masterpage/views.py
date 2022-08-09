@@ -76,8 +76,35 @@ def loginPage(request):
     return render(request, 'login.html')
 
 
-
 def logout(request):
     do_logout(request)
     redirect_path = reverse("loginpage")
     return redirect(redirect_path)
+
+
+def ipSorgula(request):
+    data = {
+        "code": 200,
+        "success": True,
+        "data": [
+            "198.18.2.0/21",
+            "198.18.2.16/22",
+            "198.18.2.32/23",
+            "198.18.2.48/24",
+            "198.18.2.64/25",
+            "198.18.2.80/26",
+            "198.18.2.96/27",
+            "198.18.2.112/28",
+            "198.18.2.128/21",
+            "198.18.2.144/22",
+            "198.18.2.160/23",
+            "198.18.2.176/24",
+            "198.18.2.192/25",
+            "198.18.2.208/26",
+            "198.18.2.224/27",
+            "198.18.2.240/28"
+        ],
+        "time": 0.003
+    }
+    JsonData = json.dumps(data, cls=DjangoJSONEncoder)
+    return HttpResponse(JsonData)

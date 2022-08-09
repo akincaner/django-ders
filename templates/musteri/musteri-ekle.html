@@ -1,0 +1,153 @@
+{% extends "masterpage.html" %}
+
+
+{% block ContentHolder %}
+
+
+    <div class="container">
+        <form>
+            <div class="mb-3">
+                <label for="name" class="form-label">İsim</label>
+                <input type="text" class="form-control" id="name" placeholder="Lütfen İsim Giriniz" name="name">
+            </div>
+            <div class="mb-3">
+                <label for="vlan" class="form-label">Vlan</label>
+                <select id="vlan" name="vlan">
+                    <option value="0">Vlan Seçiniz</option>
+                    {% for vlan in vlanData %}
+                        <option value="{{ vlan.vlan_id }}"> {{ vlan.vlan_id }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="subnetMask" class="form-label">Subnet Mask</label>
+                        <select id="subnetMask" name="subnetMask">
+                            <option value="0">Subnet Mask Seçiniz</option>
+                            <option value="21">21</option>
+                            <option value="22">22</option>
+                            <option value="23">23</option>
+                            <option value="24">24</option>
+                            <option value="25">25</option>
+                            <option value="26">26</option>
+                            <option value="27">27</option>
+                            <option value="28">28</option>
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label for="selectedIp" class="form-label">Seçili Ip Adresi</label>
+                        <input type="text" id="selectedIp" disabled>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <div class="row">
+                    <div class="col-6">
+                        <label for="ipSelect" class="form-label">İp Seçiniz</label>
+                        <select id="ipSelect" name="ipSelect">
+                            <option value="0">Ip Seçiniz</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+            <div class="mb-3">
+                <label for="switch" class="form-label">Switch</label>
+                <select id="switch" name="switch">
+                    <option value="0">Switch Seçiniz</option>
+                    {% for sw in swData %}
+                        <option value="{{ sw.sw_name }}"> {{ sw.sw_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="d-grid gap-2 col-6 mx-auto">
+                <button class="btn btn-primary" type="button" onclick="submitForm()">Müşteri Ekle</button>
+            </div>
+        </form>
+    </div>
+
+
+
+    <script>
+        var ipData = [];
+        var request = $.ajax({
+            method: 'GET',
+            url: '/ip-sorgula/',
+            data: {}
+        })
+        request.done(function (response) {
+            var jsonresponse = JSON.parse(response)
+            ipData = jsonresponse.data;
+            console.log(ipData);
+            // var html = '<option value="0">Ip Seçiniz</option>';
+            //for (var item of ipData) {
+            //     html += '<option value="' + item + '">' + item.split('/')[1] + '</option>';
+            //}
+            //$('#ip').html(html);
+        })
+
+        $(document).on('change', '#subnetMask', function (event) {
+            console.log(event.target.value);
+            // Seçili Ip Adresi alanını doldurmak için Kullandığımız kodun başlangıcı
+            var selectedSubnetMask = ipData.find(function (element) {
+                if (event.target.value == element.split('/')[1]) {
+                    return true;
+                }
+            });
+            $('#selectedIp').val(selectedSubnetMask);
+            // Seçili Ip Adresi alanını doldurmak için Kullandığımız kodun sonu
+
+            // Seçili Subnet Mask Değerine Göre İp select getirmek için kullanıdığımız kod başlangıcı
+
+            var selectedIps = ipData.filter(function (element) {
+                if (event.target.value == element.split('/')[1]) {
+                    return true;
+                }
+            })
+            var html = '<option value="0">Ip Seçiniz</option>';
+            for (var item of selectedIps) {
+                html += '<option value="' + item + '">' + item.split('/')[0] + '</option>';
+            }
+            $('#ipSelect').html(html);
+
+
+            // Seçili Subnet Mask Değerine Göre İp select getirmek için kullanıdığımız kod sonu
+        });
+
+
+        function submitForm() {
+            var formName = $('#name').val();
+            if (formName == '' || formName.split(' ').length > 1) {
+                alert('İsim Boş veya Boşluklu Olamaz.');
+                return false;
+            }
+
+            var formVlan = $('#vlan').val();
+            if (formVlan == '0') {
+                alert('Lütfen Vlan Seçiniz.');
+                return false;
+            }
+
+            var request = $.ajax({
+                method: 'GET',
+                url: '/musteri/api/musteri-ekle/',
+                data: {
+                    name: formName,
+                    vlan: formVlan,
+                    ip: $('#ipSelect').val(),
+                    switch: $('#switch').val(),
+                }
+            })
+
+            request.done(function (response){
+                var jsonResponse = JSON.parse(response);
+                if(jsonResponse.status){
+                    alert('Yeni Müşteri Ekleme işleminiz Başarıyla Tamamlanmıştır.')
+                    window.location.href ='/musteri/musteri-listele/';
+                }
+            })
+        }
+    </script>
+
+
+{% endblock ContentHolder %}

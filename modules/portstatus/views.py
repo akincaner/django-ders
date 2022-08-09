@@ -1,4 +1,3 @@
-import pymysql
 from django.shortcuts import render
 from modules.portstatus.models import swtable, swporttable, documents as documentsModel
 from modules.portstatus.backendScript import backendScript1
@@ -33,7 +32,8 @@ def swPortSelect(request):
     for portData in swporttabledata:
         data.append({
             "id": portData.id,
-            "port": portData.port
+            "port": portData.port,
+            "sw_id": portData.swtabledata.id
         })
     context = {
         'swNameList': sw_data,

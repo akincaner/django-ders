@@ -27,6 +27,8 @@ urlpatterns = [
     path('dc/', include('modules.datacenter.urls')),
     path('orders/', include('modules.orders.urls')),
     path('sw/', include('modules.portstatus.urls')),
+    path('musteri/', include('modules.musteri.urls')),
+
     path('admin/', admin.site.urls),
 
 ]

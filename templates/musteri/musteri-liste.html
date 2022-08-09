@@ -1,0 +1,45 @@
+{% extends "masterpage.html" %}
+
+{% block ContentHolder %}
+
+    <div class="container">
+        <h2 class="text-center"><u>Müşteri Listesi</u></h2><br>
+        <table class="table table-dark table-striped">
+            <thead>
+            <th>name</th>
+            <th>vlan</th>
+            <th>ip</th>
+            <th>switch</th>
+            </thead>
+            <tbody>
+            {% for item in data %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.vlan }}</td>
+                    <td>{{ item.ip }}</td>
+                    <td>{{ item.switch }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+        <nav aria-label="Page navigation example">
+            <ul class="pagination">
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Previous">
+                        <span aria-hidden="true">&laquo;</span>
+                    </a>
+                </li>
+                <li class="page-item"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" aria-label="Next">
+                        <span aria-hidden="true">&raquo;</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+
+{% endblock ContentHolder %}

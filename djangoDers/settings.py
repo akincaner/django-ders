@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'modules.orders',
     'modules.datacenter',
     'modules.portstatus',
-    'modules.masterpage'
+    'modules.masterpage',
+    'modules.musteri'
 
 ]
 
