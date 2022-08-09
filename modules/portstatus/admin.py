@@ -9,7 +9,7 @@ class Portview(admin.ModelAdmin):
     # tıklanabilir alanları belirler, defaultta ilki gelir
     list_filter = ('status',)
     # filtreleneilcek alan belirlenir. virgül önemli
-    search_fields = ('mac',)
+    search_fields = ('mac','port')
     # arama butonu oluştur. Hangi değerler içinde arayaccağını seç
     # list_editable = ('durum','toplam_tutar',)
     # içine girmeden direkt dışırdan editlenebilir olanları belirliyor

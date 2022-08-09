@@ -1,6 +1,8 @@
+import pymysql
 from django.shortcuts import render
 from modules.portstatus.models import swtable, swporttable, documents as documentsModel
 from modules.portstatus.backendScript import backendScript1
+from modules.masterpage.views import json_response
 
 
 def swPortSelect(request):
@@ -26,14 +28,21 @@ def swPortSelect(request):
             scriptResponse = backendScript1(port_data)
 
     sw_data = swtable.objects.all()
-    print(sw_data)
+    swporttabledata = swporttable.objects.all()
+    data = []
+    for portData in swporttabledata:
+        data.append({
+            "id": portData.id,
+            "port": portData.port
+        })
     context = {
         'swNameList': sw_data,
         'portlist': portlist_data,
         'portdata': port_data,
         'swSelect': int(swSelect),
         'portSelect': int(portSelect),
-        'scriptResponse': scriptResponse
+        'scriptResponse': scriptResponse,
+        'swporttabledata': data
     }
 
     return render(request, 'portstatus/switch.html', context)
@@ -42,7 +51,22 @@ def swPortSelect(request):
 def documents(request):
     if request.FILES:
         for docs in request.FILES.get('dosya'):
-            new_documents = documentsModel(document=docs,description=request.POST.get('subject'))
+            new_documents = documentsModel(document=docs, description=request.POST.get('subject'))
             new_documents.save()
 
     return render(request, 'portstatus/documents.html')
+
+
+def getPort(request):
+    data = []
+    switchId = request.GET.get('switch_id')
+    if switchId != '0' and switchId != None:
+        portList = swporttable.objects.filter(swtabledata_id=switchId)
+        for portData in portList:
+            data.append({
+                'id': portData.id,
+                'port': portData.port
+            })
+        return json_response(status=True, message="", data=data)
+
+    return json_response()

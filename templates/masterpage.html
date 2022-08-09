@@ -7,12 +7,16 @@
     <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
     <link rel="stylesheet" href="/static/lib/font-awesome/css/font-awesome.min.css">
+    <script
+            src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous"></script>
     <style>
         html, body, h1, h2, h3, h4, h5 {
             font-family: "Raleway", sans-serif
         }
     </style>
-     <style>
+    <style>
         body {
             font-family: Arial, Helvetica, sans-serif;
         }
@@ -21,7 +25,7 @@
             box-sizing: border-box;
         }
 
-        input[type=text],input[type=file], select, textarea {
+        input[type=text], input[type=file], select, textarea {
             width: 100%;
             padding: 12px;
             border: 1px solid #ccc;
@@ -50,25 +54,30 @@
             background-color: #f2f2f2;
             padding: 20px;
         }
+        @media (min-width: 993px) {
+            .w3-hide-large {
+                display: none !important;
+            }
+        }
     </style>
 </head>
 <body class="w3-light-grey">
 
 <!-- Top container -->
 
-
 <div class="w3-bar w3-top w3-black w3-large" style="z-index:4">
-    <button class="w3-bar-item w3-button w3-hide-large w3-hover-none w3-hover-text-light-grey" onclick="w3_open();">
+    <button class="w3-bar-item w3-button w3-hover-none w3-hover-text-light-grey" onclick="w3_open();">
         <i class="fa fa-bars"></i>  Menu
     </button>
-    <span class="w3-bar-item w3-right">Logo</span>
+    <span class="w3-bar-item w3-right">TT Portal</span>
 </div>
 
 <!-- Sidebar/menu -->
-<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar"><br>
+<nav class="w3-sidebar w3-collapse w3-white w3-animate-left" style="z-index:3;width:300px;" id="mySidebar">
+    <br>
     <div class="w3-container w3-row">
         <div class="w3-col s4">
-            <img src="/static/img/avatar2.png" class="w3-circle w3-margin-right" style="width:46px">
+            <img src="/static/img/avatar2.png" class="w3-circle w3-margin-right" style="width:50px">
         </div>
         <div class="w3-col s8 w3-bar">
             <span>Hoşgeldin, <strong>{{ request.user.username }}</strong></span><br>
@@ -86,9 +95,13 @@
            onclick="w3_close()" title="close menu"><i class="fa fa-remove fa-fw"></i>  Menüyü Kapat</a>
         <a href="/" class="w3-bar-item w3-button w3-padding {% if request.path == '/' %}w3-blue{% endif %}"><i
                 class="fa fa-home" aria-hidden="true"></i>  Anasayfa</a>
-        <a href="/sw/swPortSelect/" class="w3-bar-item w3-button w3-padding {% if request.path == '/sw/swPortSelect/' %}w3-blue{% endif %}"><i class="fa fa-eye fa-fw"></i>  Switch -
+        <a href="/sw/swPortSelect/"
+           class="w3-bar-item w3-button w3-padding {% if request.path == '/sw/swPortSelect/' %}w3-blue{% endif %}"><i
+                class="fa fa-eye fa-fw"></i>  Switch -
             Port Filtrele</a>
-        <a href="/sw/dokuman/" class="w3-bar-item w3-button w3-padding {% if request.path == '/sw/dokuman/' %}w3-blue{% endif %}"><i class="fa fa-cloud-upload" aria-hidden="true"></i>  Döküman Ekle</a>
+        <a href="/sw/dokuman/"
+           class="w3-bar-item w3-button w3-padding {% if request.path == '/sw/dokuman/' %}w3-blue{% endif %}"><i
+                class="fa fa-cloud-upload" aria-hidden="true"></i>  Döküman Ekle</a>
         <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bullseye fa-fw"></i>  Geo</a>
         <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-diamond fa-fw"></i>  Orders</a>
         <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bell fa-fw"></i>  News</a>
@@ -105,15 +118,22 @@
 
 <!-- !PAGE CONTENT! -->
 <div class="w3-main" style="margin-left:300px;margin-top:43px;">
-    {% block ContentHolder %}{% endblock ContentHolder %}
+    {% block ContentHolder %}
+
+    {% endblock ContentHolder %}
 </div>
 
 <script>
     // Get the Sidebar
-    var mySidebar = document.getElementById("mySidebar");
+    // JavaScript Dilinde eleman idsine göre Element Çekme
+    // var mySidebar = document.getElementById("mySidebar");
+    // jquery Dilinde eleman idsine göre Element Çekme
+    var mySidebar = $('#mySidebar')[0];
 
     // Get the DIV with overlay effect
-    var overlayBg = document.getElementById("myOverlay");
+    // var overlayBg = document.getElementById("myOverlay");
+    var overlayBg = $('#myOverlay')[0];
+
 
     // Toggle between showing and hiding the sidebar, and add overlay effect
     function w3_open() {

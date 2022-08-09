@@ -17,19 +17,14 @@
                 {% endfor %}
             </select>
 
-            {% if portlist %}
+            <div id="portArea" style="display: none;">
                 <label for="portname">Port Seçiniz</label>
                 <select id="portname" name="portSelect">
-                    <option value="0"> Port seçiniz
-                    </option>
-                    {% for item in portlist %}
+                    <option value="0"> Port seçiniz</option>
 
-                        <option value="{{ item.id }}"
-                                {% if portSelect == item.id %}selected="selected" {% endif %}>   {{ item.port }} </option>
-                    {% endfor %}
                 </select>
-            {% endif %}
 
+            </div>
             <input type="submit" value="Gönder">
         </form>
 
@@ -46,6 +41,46 @@
         <br>
 
     </div>
+
+
+    <script>
+        var portArea = $('#portArea')[0];
+        {#var swPortTable = "{{ swporttabledata|safe }}";#}
+        {#var jsonScwPortTable = JSON.parse(swPortTable);#}
+        {#console.log(jsonScwPortTable);#}
+        $(document).on('change', '#swname', function (event) {
+
+            var request = $.ajax({
+                method: 'GET',
+                url: '/sw/api/get-port/',
+                data: {
+                    "switch_id": event.target.value
+                }
+            })
+            request.done(function (response) {
+                console.log(response);
+                var jsonResponse = JSON.parse(response);
+                console.log(jsonResponse);
+                if (jsonResponse.status == true) {
+                    console.log(jsonResponse.data);
+                    var protData = jsonResponse.data;
+                    for (var item of protData) {
+                        console.log(item);
+                        var html = '<option value="'+ item.id+'">'+ item.port +'</option>';
+                        console.log(html);
+                        var portSelect =  $('#portname')[0];
+                        console.log(portSelect.children);
+                        portSelect.append(html);
+                    }
+                    portArea.style.display = 'block';
+                } else {
+                    portArea.style.display = 'none';
+                }
+            })
+
+
+        });
+    </script>
 
 
 

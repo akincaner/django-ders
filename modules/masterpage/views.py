@@ -29,9 +29,9 @@ def login(request):
     username = request.POST.get('username')
     password = request.POST.get('password')
     returnHtml = request.POST.get('returnHtml')
-    print(username)
-    print(password)
-    print(returnHtml)
+    # print(username)
+    # print(password)
+    # print(returnHtml)
     try:
         remoteUser = User.objects.get(username=username)
         authenticatedUser = authenticate(username=username, password=password)

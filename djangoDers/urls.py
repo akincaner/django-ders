@@ -18,6 +18,8 @@ from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
 
+# http://127.0.0.1:8000/dc/switch-listele
+# http://127.0.0.1:8000/sw/switch-listele
 # http://127.0.0.1:8000/
 
 urlpatterns = [
