@@ -1,4 +1,5 @@
 {% extends "masterpage.html" %}
+{% load globalfunction %}
 
 {% block ContentHolder %}
 
@@ -14,7 +15,7 @@
             <tbody>
             {% for item in data %}
                 <tr>
-                    <td>{{ item.name }}</td>
+                    <td>{{ item.name|hideCustomerName:'*' }}</td>
                     <td>{{ item.vlan }}</td>
                     <td>{{ item.ip }}</td>
                     <td>{{ item.switch }}</td>
@@ -25,21 +26,57 @@
         <nav aria-label="Page navigation example">
             <ul class="pagination">
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Previous">
+                    <a class="page-link" href="" onclick="previousPage()" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
-                <li class="page-item"><a class="page-link" href="#">1</a></li>
-                <li class="page-item"><a class="page-link" href="#">2</a></li>
-                <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+                {% for item in 'x'|ljust:pageCount %}
+
+                    <li class="page-item">
+                        <a class="page-link"
+                           href="/musteri/musteri-listele/?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                    </li>
+                {% endfor %}
+
+
+                {#                <li class="page-item"><a class="page-link" href="/musteri/musteri-listele/?page=2">2</a></li>#}
+                {#                <li class="page-item"><a class="page-link" href="/musteri/musteri-listele/?page=3">3</a></li>#}
+
+
                 <li class="page-item">
-                    <a class="page-link" href="#" aria-label="Next">
+                    <a class="page-link" href="" onclick="nextPage()" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
             </ul>
         </nav>
     </div>
+
+
+
+    <script>
+        var totalPageCount = {{ pageCount }}
+        console.log(window.location.href);
+        console.log(window.location.search)
+        var search = window.location.search;
+        var page = search.split('=')[1];
+        console.log(page);
+
+        function previousPage() {
+            if(parseInt(page) -1 > 1 ){
+                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) -1)
+            }
+        }
+
+        function nextPage() {
+            if(parseInt(totalPageCount) >= (parseInt(page) + 1)){
+                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) +1)
+            }
+        }
+
+
+    </script>
 
 
 {% endblock ContentHolder %}

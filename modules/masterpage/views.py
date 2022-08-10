@@ -108,3 +108,7 @@ def ipSorgula(request):
     }
     JsonData = json.dumps(data, cls=DjangoJSONEncoder)
     return HttpResponse(JsonData)
+
+
+def buildNewTemp(request):
+    return render(request, 'new-template/masterpage.html')
