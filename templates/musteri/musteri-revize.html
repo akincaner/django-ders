@@ -1,0 +1,291 @@
+{% extends "masterpage.html" %}
+
+
+
+{% block ContentHolder %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-4"></div>
+            <div class="col-4">
+                <div style="text-align: center;font-size: 25px;font-weight: bold;margin-bottom: 15px;color: #6f12f3;">
+                    Müşteri Seçiniz
+                </div>
+                <select id="musteri-sec" class="select-2-yap">
+                    <option value="">Müşteri Seçiniz</option>
+                    {% for item in musteriData %}
+                        <option value="{{ item.id }}"> {{ item.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-4"></div>
+        </div>
+
+    </div>
+
+    <div class="container">
+        <div class="row">
+            <div class="col-3"></div>
+            <div class="col-6">
+                <div class="card">
+                    <div class="card-body">
+                        <form class="needs-validation" id="addCustomerForm" novalidate="">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">İsim</label>
+                                <input type="text" class="form-control" id="name" placeholder="Lütfen İsim Giriniz"
+                                       name="name"
+                                       required="">
+                                <div class="invalid-feedback">
+                                    Lütfen İsim Giriniz.
+                                    <br>
+                                    İsim Alanı Boşluklu Olamaz
+                                </div>
+                            </div>
+                            <div style="margin-bottom: 10px !important;">
+                                <label for="vlan" class="form-label">Vlan</label>
+                                <select id="vlan" name="vlan" class="form-select" required="">
+                                    <option selected="" disabled="" value="">Vlan Seçiniz</option>
+                                    {% for vlan in vlanData %}
+                                        <option value="{{ vlan.vlan_id }}"> {{ vlan.vlan_id }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">
+                                    Lütfen Vlan Değeri Seçiniz
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="subnetMask" class="form-label">Subnet Mask</label>
+                                        <select id="subnetMask" name="subnetMask" class="form-select" required="">
+                                            <option selected="" disabled="" value="">Subnet Mask Seçiniz</option>
+                                            <option value="21">21</option>
+                                            <option value="22">22</option>
+                                            <option value="23">23</option>
+                                            <option value="24">24</option>
+                                            <option value="25">25</option>
+                                            <option value="26">26</option>
+                                            <option value="27">27</option>
+                                            <option value="28">28</option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Lütfen Subnet Mask Değeri Seçiniz
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <label for="selectedIp" class="form-label">Seçili Ip Adresi</label>
+                                        <input type="text" id="selectedIp" disabled>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <div class="row">
+                                    <div class="col-6">
+                                        <label for="ipSelect" class="form-label">İp Seçiniz</label>
+                                        <select id="ipSelect" name="ipSelect" class="form-select" required="">
+                                            <option selected="" disabled="" value="">Ip Seçiniz</option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Lütfen Subnet Mask Değeri Seçiniz
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="switch" class="form-label">Switch</label>
+                                <select id="switch" name="switch" class="form-select" required="">
+                                    <option selected="" disabled="" value="">Switch Seçiniz</option>
+                                    {% for sw in swData %}
+                                        <option value="{{ sw.sw_name }}"> {{ sw.sw_name }}</option>
+                                    {% endfor %}
+                                </select>
+                                <div class="invalid-feedback">
+                                    Lütfen Switch Değeri Seçiniz
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 col-6 mx-auto">
+                                <button class="btn btn-danger" type="button" onclick="submitForm()">Müşteriyi Düzenle
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="col-3"></div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="userInfoModal" tabindex="-1" aria-labelledby="userInfoModalLabel"
+         aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="userInfoModalLabel">Bilgilendirme</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <h6 id="modal-message">Yeni Müşteri Ekleme işleminiz Başarıyla Tamamlanmıştır.</h6>
+                </div>
+                <div class="modal-footer" id="valid-message" style="display: none;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Devam Et</button>
+                    <button type="button" class="btn btn-primary"
+                            onclick="window.location.href = '/musteri/musteri-listele/';">Müşteri Listele
+                    </button>
+                </div>
+                <div class="modal-footer" id="invalid-message" style="display: none;">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Kapat</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <script>
+        var ipData = [];
+        var selectedMusteri;
+        var musteriBilgileri = {{ musteriData|safe }}
+
+            // id="musteri-sec" olan eleman değiştiğinde :
+            $(document).on('change', '#musteri-sec', function (event) {
+                selectedMusteri = musteriBilgileri.find(function (eleman) {
+                    if (event.target.value == eleman.id) {
+                        return true;
+                    }
+                });
+
+                console.log(selectedMusteri);
+                // id="name" olan elemanın value değerini parantez içindeki değer ile değiştir :
+                // # işareti id si ..... olan elemanı getirir
+
+                $('#name').val(selectedMusteri.name);
+                $('#vlan').val(selectedMusteri.vlan);
+                $('#subnetMask').val(selectedMusteri.ip.split('/')[1]);
+                $('#selectedIp').val(selectedMusteri.ip.split('/')[0]);
+                $('#switch').val(selectedMusteri.switch);
+
+
+                var selectedIps = ipData.filter(function (element) {
+                    if (selectedMusteri.ip.split('/')[1] == element.split('/')[1]) {
+                        return true;
+                    }
+                })
+                var html = '<option selected="" disabled="" value="">Ip Seçiniz</option>';
+                for (var item of selectedIps) {
+                    html += '<option value="' + item + '">' + item.split('/')[0] + '</option>';
+                }
+                $('#ipSelect').html(html);
+
+                $('#ipSelect').val(selectedMusteri.ip);
+
+            });
+
+
+        var request = $.ajax({
+            method: 'GET',
+            url: '/ip-sorgula/',
+            data: {}
+        })
+
+        request.done(function (response) {
+            var jsonresponse = JSON.parse(response)
+            ipData = jsonresponse.data;
+            console.log(ipData);
+        })
+
+
+        $(document).on('change', '#subnetMask', function (event) {
+
+            // Seçili Ip Adresi alanını doldurmak için Kullandığımız kodun başlangıcı
+            // 192.168.1.1/27
+            // 192.168.1.1 -> index 0
+            // 27 -> index 1
+            var selectedSubnetMask = ipData.find(function (element) {
+                if (event.target.value == element.split('/')[1]) {
+                    return true;
+                }
+            });
+            $('#selectedIp').val(selectedSubnetMask);
+            // Seçili Ip Adresi alanını doldurmak için Kullandığımız kodun sonu
+
+            // Seçili Subnet Mask Değerine Göre İp select getirmek için kullanıdığımız kod başlangıcı
+
+            var selectedIps = ipData.filter(function (element) {
+                if (event.target.value == element.split('/')[1]) {
+                    return true;
+                }
+            })
+            var html = '<option selected="" disabled="" value="">Ip Seçiniz</option>';
+            for (var item of selectedIps) {
+                html += '<option value="' + item + '">' + item.split('/')[0] + '</option>';
+            }
+            $('#ipSelect').html(html);
+
+            // Seçili Subnet Mask Değerine Göre İp select getirmek için kullanıdığımız kod sonu
+        });
+
+        function submitForm() {
+            var form = $('.needs-validation')[0];
+
+            if (!form.checkValidity()) {
+                form.classList.add('was-validated');
+                return false;
+            }
+
+            var sendForm = $.ajax({
+                method: 'GET',
+                url: '/musteri/api/musteri-ekle/',
+                data: {
+                    name: $('#name').val(),
+                    vlan: $('#vlan').val(),
+                    ip: $('#ipSelect').val(),
+                    switch: $('#switch').val(),
+                    update: true,
+                    id: selectedMusteri.id
+                }
+            })
+
+            sendForm.done(function (response) {
+                var jsonResponse = JSON.parse(response);
+                apiStatus = jsonResponse.status;
+                if (jsonResponse.status) {
+                    $('#userInfoModalLabel').text('Bilgilendirme');
+                    $('#modal-message').text('Müşteri Revize işleminiz Başarıyla Tamamlanmıştır.');
+                    $('#valid-message')[0].style.display = 'block';
+                    $('#invalid-message')[0].style.display = 'none';
+                } else {
+                    // text <> arada kalan alanı doldurur  </>
+                    $('#userInfoModalLabel').text('Hata');
+                    $('#modal-message').text(jsonResponse.message);
+                    // elemanın stilini değiştirme
+                    $('#valid-message')[0].style.display = 'none';
+                    $('#invalid-message')[0].style.display = 'block';
+                    // elemana yeni bir class ekleme
+                    form.classList.add('was-validated');
+                    $('#name')[0].classList.add('is-invalid');
+                }
+                const myModal = new bootstrap.Modal(document.getElementById('userInfoModal'), {
+                    keyboard: false
+                })
+                myModal.show();
+            })
+
+            // Modal Kapandığında Çalışır.
+            userInfoModal.addEventListener('hide.bs.modal', event => {
+
+            if (apiStatus) {
+                var myForm = $('.needs-validation')[0];
+                myForm.reset();
+                // elemandan bir class silme
+                myForm.classList.remove('was-validated');
+                $('#name')[0].classList.remove('is-invalid');
+            }
+
+
+        })
+        }
+
+    </script>
+
+{% endblock ContentHolder %}

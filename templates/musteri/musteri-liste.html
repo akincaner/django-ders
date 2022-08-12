@@ -4,7 +4,22 @@
 {% block ContentHolder %}
 
     <div class="container">
-        <h2 class="text-center"><u>Müşteri Listesi</u></h2><br>
+
+        <div class="row">
+            <div class="col-10">
+                <h2 class="text-center"><u>Müşteri Listesi</u></h2><br>
+            </div>
+            <div class="col-2">
+                <select name="size" id="size" style="width: 50%;">
+                    <option value="5">5</option>
+                    <option selected="selected" value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                </select>
+                <button onclick="changeSize()" type="button" class="btn btn-info">Git</button>
+            </div>
+        </div>
+
         <table class="table table-dark table-striped">
             <thead>
             <th>name</th>
@@ -25,17 +40,16 @@
         </table>
         <nav aria-label="Page navigation example">
             <ul class="pagination">
-                <li class="page-item">
-                    <a class="page-link" href="" onclick="previousPage()" aria-label="Previous">
+                <li class="page-item" id="previousPage">
+                    <a class="page-link" style="cursor: pointer" onclick="previousPage()" aria-label="Previous">
                         <span aria-hidden="true">&laquo;</span>
                     </a>
                 </li>
 
-                {% for item in 'x'|ljust:pageCount %}
-
-                    <li class="page-item">
+                {% for item in 'y'|ljust:pageCount %}
+                    <li class="page-item" id="page-{{ forloop.counter }}">
                         <a class="page-link"
-                           href="/musteri/musteri-listele/?page={{ forloop.counter }}">{{ forloop.counter }}</a>
+                           href="/musteri/musteri-listele/?page={{ forloop.counter }}&size={{ request|getSizeFromParams }}">{{ forloop.counter }}</a>
                     </li>
                 {% endfor %}
 
@@ -44,8 +58,8 @@
                 {#                <li class="page-item"><a class="page-link" href="/musteri/musteri-listele/?page=3">3</a></li>#}
 
 
-                <li class="page-item">
-                    <a class="page-link" href="" onclick="nextPage()" aria-label="Next">
+                <li class="page-item" id="nextPage">
+                    <a class="page-link" style="cursor: pointer" onclick="nextPage()" aria-label="Next">
                         <span aria-hidden="true">&raquo;</span>
                     </a>
                 </li>
@@ -57,24 +71,60 @@
 
     <script>
         var totalPageCount = {{ pageCount }}
-        console.log(window.location.href);
-        console.log(window.location.search)
-        var search = window.location.search;
-        var page = search.split('=')[1];
-        console.log(page);
+        var urlParametreleri = new URLSearchParams(window.location.search)
+        // var search = window.location.search;
+        // var page = search.split('&')[0].split('=')[1];
+        // var size = search.split('&')[1].split('=')[1];
+        var page = urlParametreleri.get('page');
+        var size = urlParametreleri.get('size');
+
+        if (page == undefined) {
+            page = 1;
+        }
+
+        if (size == undefined) {
+            size = 10
+        }
+
 
         function previousPage() {
-            if(parseInt(page) -1 > 1 ){
-                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) -1)
+            if (parseInt(page) - 1 >= 1) {
+                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) - 1) + '&size=' +size
             }
         }
 
         function nextPage() {
-            if(parseInt(totalPageCount) >= (parseInt(page) + 1)){
-                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) +1)
+            if (parseInt(totalPageCount) >= (parseInt(page) + 1)) {
+                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) + 1)+ '&size=' +size
             }
         }
 
+
+        $(document).ready(function ($) {
+            if (parseInt(page) === 1) {
+                $('#previousPage')[0].classList.add('disabled');
+            }
+
+            if (parseInt(page) === parseInt(totalPageCount)) {
+                $('#nextPage')[0].classList.add('disabled');
+            }
+
+            $('#page-' + page)[0].classList.add('active');
+
+            $('#size').children().each(function (index, item) {
+                item.selected = false;
+                if (parseInt(item.value) === parseInt(size)) {
+                    item.selected = true;
+                }
+            });
+
+        });
+
+        function changeSize() {
+            // window.location.href = window.location.href + '&size=' + $('#size').val()
+            urlParametreleri.set('size', $('#size').val());
+            window.location.href = '/musteri/musteri-listele/?' + urlParametreleri.toString();
+        }
 
     </script>
 

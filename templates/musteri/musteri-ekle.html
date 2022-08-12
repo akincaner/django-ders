@@ -16,9 +16,9 @@
                     İsim Alanı Boşluklu Olamaz
                 </div>
             </div>
-            <div class="mb-3">
+            <div style="margin-bottom: 10px !important;">
                 <label for="vlan" class="form-label">Vlan</label>
-                <select id="vlan" name="vlan" class="form-select" required="">
+                <select id="vlan" name="vlan" class="form-select select-2-yap" required="">
                     <option selected="" disabled="" value="">Vlan Seçiniz</option>
                     {% for vlan in vlanData %}
                         <option value="{{ vlan.vlan_id }}"> {{ vlan.vlan_id }}</option>
@@ -118,21 +118,27 @@
     <script>
         var apiStatus = false;
         var ipData = [];
+
+
+        /****
+         * Api Sorgusu Başlangıcı
+         ***/
+        // İstek Kısmı
         var request = $.ajax({
             method: 'GET',
             url: '/ip-sorgula/',
             data: {}
         })
+        // İstek tamamlanıp dönen cevabı alma kımı
         request.done(function (response) {
             var jsonresponse = JSON.parse(response)
             ipData = jsonresponse.data;
             console.log(ipData);
-            // var html = '<option value="0">Ip Seçiniz</option>';
-            //for (var item of ipData) {
-            //     html += '<option value="' + item + '">' + item.split('/')[1] + '</option>';
-            //}
-            //$('#ip').html(html);
         })
+        /****
+         * Api Sorgusu Başlangıcı
+         ***/
+
 
         $(document).on('change', '#subnetMask', function (event) {
 
@@ -160,7 +166,6 @@
                 html += '<option value="' + item + '">' + item.split('/')[0] + '</option>';
             }
             $('#ipSelect').html(html);
-
 
             // Seçili Subnet Mask Değerine Göre İp select getirmek için kullanıdığımız kod sonu
         });
@@ -194,10 +199,13 @@
                     $('#valid-message')[0].style.display = 'block';
                     $('#invalid-message')[0].style.display = 'none';
                 } else {
+                    // text <> arada kalan alanı doldurur  </>
                     $('#userInfoModalLabel').text('Hata');
                     $('#modal-message').text(jsonResponse.message);
+                    // elemanın stilini değiştirme
                     $('#valid-message')[0].style.display = 'none';
                     $('#invalid-message')[0].style.display = 'block';
+                    // elemana yeni bir class ekleme
                     form.classList.add('was-validated');
                     $('#name')[0].classList.add('is-invalid');
                 }
@@ -210,6 +218,7 @@
 
 
         const userInfoModal = document.getElementById('userInfoModal')
+
         userInfoModal.addEventListener('hide.bs.modal', event => {
             // console.log('Modal Kapandı');
             {#$('#name').val('');#}
@@ -221,6 +230,7 @@
             if (apiStatus) {
                 var myForm = $('.needs-validation')[0];
                 myForm.reset();
+                // elemandan bir class silme
                 myForm.classList.remove('was-validated');
                 $('#name')[0].classList.remove('is-invalid');
             }

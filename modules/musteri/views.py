@@ -1,3 +1,4 @@
+import math
 import pymysql
 from django.shortcuts import render
 from modules.portstatus.models import swtable
@@ -14,24 +15,36 @@ def connection_mysql():
 
 def musteriList(request):
     page = request.GET.get('page') if request.GET.get('page') else 1
+
+    # print(request.GET.get('size'))
+    if request.GET.get('size'):
+        size = int(request.GET.get('size'))
+    else:
+        size = 10
+
+    # print(size)
+
     cur = connection_mysql()[0]
 
     if int(page) == 1:
         startLimit = 1
     else:
-        startLimit = (int(page) - 1) * 10
+        startLimit = (int(page) - 1) * size
 
-    endLimit = int(page) * 10
+    endLimit = int(page) * size
 
-    # print(startLimit)
-    # print(endLimit)
+    print(startLimit)
+    print(endLimit)
 
     sqlquery = """
-    SELECT * FROM musteri LIMIT {startLimit}, {endLimit};
-    """.format(startLimit=startLimit, endLimit=endLimit)
+    SELECT * FROM musteri LIMIT {size} OFFSET {startLimit};
+    """.format(size=size, startLimit=startLimit)
+
+    print(sqlquery)
     cur.execute(sqlquery)
     results = cur.fetchall()
-    # print(results)
+    print(results)
+    print(len(results))
 
     countSqlQuery = """
     select count(*) as total from musteri
@@ -40,8 +53,8 @@ def musteriList(request):
     countResult = cur.fetchone()
     # print(countResult['total'])
     totalDataCount = int(countResult['total'])
-    pageCount = round(totalDataCount / 10, 0)
-    # print(pageCount)
+    # pageCount = round(totalDataCount / 10, 0)
+    pageCount = math.ceil(totalDataCount / size)
 
     context = {
         "data": results,
@@ -77,6 +90,8 @@ def apiMusteriEkle(request):
     vlan = request.GET.get('vlan')
     ip = request.GET.get('ip')
     switch = request.GET.get('switch')
+    update = request.GET.get('update')
+    id = request.GET.get('id')
     try:
         if ' ' in name:
             return json_response(status=False, message="İsim Alanında Boşluk olamaz.", data=[])
@@ -85,12 +100,46 @@ def apiMusteriEkle(request):
                                             cursorclass=pymysql.cursors.DictCursor)
         cur = remote_connection.cursor()
 
-        sql = """
-           INSERT INTO musteri (`name`, `vlan`, `ip`,`switch`) VALUES ('{name}', '{vlan}', '{ip}','{switch}')
-           """.format(name=name, vlan=vlan, ip=ip, switch=switch)
+        if update:
+            sql = """
+                UPDATE musteri SET name = '{name}' , vlan= '{vlan}', ip='{ip}', switch='{switch}' WHERE (id = {id});
+            """.format(name=name, vlan=vlan, ip=ip, switch=switch, id=id)
+        else:
+            sql = """
+               INSERT INTO musteri (`name`, `vlan`, `ip`,`switch`) VALUES ('{name}', '{vlan}', '{ip}','{switch}')
+               """.format(name=name, vlan=vlan, ip=ip, switch=switch)
 
         cur.execute(sql)
         remote_connection.commit()
         return json_response(status=True, message='Data Ekleme Başarılı', data=[])
     except Exception as e:
+        print(e)
         return json_response(status=False, message='Bir Hata Meydana Geldi.', data=[])
+
+
+def musteriRevize(request):
+    cur = connection_mysql()[0]
+
+    sqlquery = """
+        SELECT * FROM musteri;
+        """
+    cur.execute(sqlquery)
+    results = cur.fetchall()
+
+    print(results)
+
+    query = """ 
+      SELECT * FROM vlan where status = 'unused'
+      """
+    cur.execute(query)
+    vlanData = cur.fetchall()
+
+    swData = swtable.objects.all()
+
+    context = {
+        "musteriData": results,
+        "vlanData": vlanData,
+        "swData": swData
+    }
+
+    return render(request, 'musteri/musteri-revize.html', context)
