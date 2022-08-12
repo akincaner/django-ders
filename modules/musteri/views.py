@@ -9,6 +9,14 @@ import logging
 errorLog = logging.getLogger('custom-error')
 
 
+def getClientIp(request):
+    x_forwarded_for = request.META.get('HTTP_X_FORWARDED_FOR')
+    if x_forwarded_for:
+        ip = x_forwarded_for.split(',')[0]
+    else:
+        ip = request.META.get('REMOTE_ADDR')
+    return ip
+
 def connection_mysql():
     remote_connection = pymysql.connect(host='localhost', user="testuser", password="123123", database="test_db",
                                         cursorclass=pymysql.cursors.DictCursor)
@@ -18,6 +26,8 @@ def connection_mysql():
 
 
 def musteriList(request):
+    print(getClientIp(request))
+
     page = request.GET.get('page') if request.GET.get('page') else 1
 
     # print(request.GET.get('size'))

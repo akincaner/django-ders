@@ -1,4 +1,5 @@
 from django import template
+from django.contrib.auth.models import Group
 
 register = template.Library()
 
@@ -27,3 +28,8 @@ def getSizeFromParams(request):
         if request.GET.get('size'):
             return request.GET.get('size')
     return '10'
+
+
+@register.filter
+def hasgroup(user, group_name):
+    return user.groups.filter(name=group_name).exists()

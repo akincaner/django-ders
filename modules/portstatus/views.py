@@ -1,3 +1,4 @@
+import pymysql
 from django.shortcuts import render
 from modules.portstatus.models import swtable, swporttable, documents as documentsModel
 from modules.portstatus.backendScript import backendScript1
@@ -49,12 +50,35 @@ def swPortSelect(request):
 
 
 def documents(request):
+    errorString = ''
     if request.FILES:
-        for docs in request.FILES.get('dosya'):
-            new_documents = documentsModel(document=docs, description=request.POST.get('subject'))
-            new_documents.save()
+        remote_connection = pymysql.connect(host='localhost', user="testuser", password="123123", database="test_db",
+                                            cursorclass=pymysql.cursors.DictCursor)
+        cur = remote_connection.cursor()
 
-    return render(request, 'portstatus/documents.html')
+        file = request.FILES.get('dosya')
+        file_data = file.read().decode('utf-8')
+        lines = file_data.split("\r")
+
+        for item in lines:
+            # try:
+            vlan_id = item.split(',')[0]
+            status = item.split(',')[1]
+
+            if vlan_id != 'Vlan ID':
+                sql = """
+                             INSERT INTO vlan (`vlan_id`, `status`) VALUES ('{vlan_id}', '{status}')
+                             """.format(vlan_id=vlan_id, status=status)
+                cur.execute(sql)
+                remote_connection.commit()
+            # except Exception as e:
+            #     errorString += 'Hata Alındı: {} '.format(str(item)) + str(e) + '<br>'
+            #     pass
+        #
+        # for item in file:
+        #     print(str(item).split(','))
+
+    return render(request, 'portstatus/documents.html', {"errorString": errorString})
 
 
 def getPort(request):

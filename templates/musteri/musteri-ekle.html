@@ -78,6 +78,24 @@
                     Lütfen Switch Değeri Seçiniz
                 </div>
             </div>
+            <div class="mb-3">
+                <label for="test" class="form-label">test</label>
+                <select id="test" name="test" class="form-select select-2-yap" multiple>
+
+                    <option value="21">21</option>
+                    <option value="22">22</option>
+                    <option value="23">23</option>
+                    <option value="24">24</option>
+                    <option value="25">25</option>
+                    <option value="26">26</option>
+                    <option value="27">27</option>
+                    <option value="28">28</option>
+
+                </select>
+                <div class="invalid-feedback">
+                    Lütfen Switch Değeri Seçiniz
+                </div>
+            </div>
             <div class="d-grid gap-2 col-6 mx-auto">
                 <button class="btn btn-primary" type="button" onclick="submitForm()">Müşteri Ekle</button>
             </div>
@@ -123,12 +141,12 @@
         /****
          * Api Sorgusu Başlangıcı
          ***/
-        // İstek Kısmı
+            // İstek Kısmı
         var request = $.ajax({
-            method: 'GET',
-            url: '/ip-sorgula/',
-            data: {}
-        })
+                method: 'GET',
+                url: '/ip-sorgula/',
+                data: {}
+            })
         // İstek tamamlanıp dönen cevabı alma kımı
         request.done(function (response) {
             var jsonresponse = JSON.parse(response)
