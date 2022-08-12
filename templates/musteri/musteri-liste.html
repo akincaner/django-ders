@@ -22,22 +22,39 @@
 
         <table class="table table-dark table-striped">
             <thead>
-            <th>name</th>
-            <th>vlan</th>
-            <th>ip</th>
-            <th>switch</th>
+            <tr>
+                <th>
+                    <input type="text" placeholder="İsim Ara">
+                </th>
+                <th>
+                    <input type="text" placeholder="Vlan Ara">
+                </th>
+                <th>
+                    <input type="text" id="ipAra" placeholder="Ip Ara">
+                </th>
+                <th>
+                    <input type="text" id="switchAra" placeholder="Switch Ara">
+                </th>
+            </tr>
+            <tr>
+                <th class="custom-table-head">İsim</th>
+                <th class="custom-table-head">Vlan</th>
+                <th class="custom-table-head">Ip</th>
+                <th class="custom-table-head">Switch</th>
+            </tr>
             </thead>
-            <tbody>
+            <tbody id="table-body">
             {% for item in data %}
-                <tr>
+                <tr class="django-data">
                     <td>{{ item.name|hideCustomerName:'*' }}</td>
-                    <td>{{ item.vlan }}</td>
-                    <td>{{ item.ip }}</td>
-                    <td>{{ item.switch }}</td>
+                    <td class="text-center">{{ item.vlan }}</td>
+                    <td class="text-center">{{ item.ip }}</td>
+                    <td class="text-center">{{ item.switch }}</td>
                 </tr>
             {% endfor %}
             </tbody>
         </table>
+
         <nav aria-label="Page navigation example">
             <ul class="pagination">
                 <li class="page-item" id="previousPage">
@@ -65,12 +82,14 @@
                 </li>
             </ul>
         </nav>
+
     </div>
 
 
 
     <script>
-        var totalPageCount = {{ pageCount }}
+        var totalPageCount =
+        {{ pageCount }}
         var urlParametreleri = new URLSearchParams(window.location.search)
         // var search = window.location.search;
         // var page = search.split('&')[0].split('=')[1];
@@ -89,13 +108,13 @@
 
         function previousPage() {
             if (parseInt(page) - 1 >= 1) {
-                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) - 1) + '&size=' +size
+                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) - 1) + '&size=' + size
             }
         }
 
         function nextPage() {
             if (parseInt(totalPageCount) >= (parseInt(page) + 1)) {
-                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) + 1)+ '&size=' +size
+                window.location.href = '/musteri/musteri-listele/?page=' + (parseInt(page) + 1) + '&size=' + size
             }
         }
 
@@ -125,6 +144,123 @@
             urlParametreleri.set('size', $('#size').val());
             window.location.href = '/musteri/musteri-listele/?' + urlParametreleri.toString();
         }
+
+    </script>
+
+
+    <script>
+        var ipKeyword = '';
+        var swKeyword = '';
+
+        $(document).on('keyup', '#ipAra', function (event) {
+            console.log(event.target.value);
+            ipKeyword = event.target.value;
+
+            $('.js-data').each(function (index, item) {
+                item.remove();
+            });
+            if (event.target.value.length >= 2) {
+                var request = $.ajax({
+                    method: 'GET',
+                    url: '/musteri/api/musteri-filter/',
+                    data: {
+                        ipKeyword: event.target.value,
+                        swKeyword: swKeyword
+                    }
+                })
+                request.done(function (response) {
+                    var jsonresponse = JSON.parse(response);
+                    console.log(jsonresponse);
+
+                    var filteredData = jsonresponse.data;
+
+                    $('.django-data').each(function (index, item) {
+                        item.style.display = 'none';
+                    });
+
+
+                    var table = $('.table')[0];
+                    for (var item of filteredData) {
+                        var row = table.insertRow(2);
+                        row.classList.add("js-data");
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        cell1.innerHTML = item.name;
+                        cell2.innerHTML = item.vlan;
+                        cell2.classList.add('text-center');
+                        cell3.innerHTML = item.ip;
+                        cell3.classList.add('text-center');
+                        cell4.innerHTML = item.switch;
+                        cell4.classList.add('text-center');
+                    }
+                })
+
+            } else {
+                $('.django-data').each(function (index, item) {
+                    item.style.display = 'table-row';
+                });
+
+            }
+
+
+        });
+
+        $(document).on('keyup', '#switchAra', function (event) {
+            console.log(event.target.value);
+            swKeyword = event.target.value;
+            $('.js-data').each(function (index, item) {
+                item.remove();
+            });
+            if (event.target.value.length >= 1) {
+                var request = $.ajax({
+                    method: 'GET',
+                    url: '/musteri/api/musteri-filter/',
+                    data: {
+                        swKeyword: event.target.value,
+                        ipKeyword: ipKeyword
+                    }
+                })
+                request.done(function (response) {
+                    var jsonresponse = JSON.parse(response);
+                    console.log(jsonresponse);
+
+                    var filteredData = jsonresponse.data;
+
+                    $('.django-data').each(function (index, item) {
+                        item.style.display = 'none';
+                    });
+
+
+                    var table = $('.table')[0];
+                    for (var item of filteredData) {
+                        var row = table.insertRow(2);
+                        row.classList.add("js-data");
+                        var cell1 = row.insertCell(0);
+                        var cell2 = row.insertCell(1);
+                        var cell3 = row.insertCell(2);
+                        var cell4 = row.insertCell(3);
+                        cell1.innerHTML = item.name;
+                        cell2.innerHTML = item.vlan;
+                        cell2.classList.add('text-center');
+                        cell3.innerHTML = item.ip;
+                        cell3.classList.add('text-center');
+                        cell4.innerHTML = item.switch;
+                        cell4.classList.add('text-center');
+                    }
+                })
+
+            } else {
+                $('.django-data').each(function (index, item) {
+                    item.style.display = 'table-row';
+                });
+
+
+            }
+
+
+        });
 
     </script>
 

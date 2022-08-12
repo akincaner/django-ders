@@ -4,6 +4,10 @@ from django.shortcuts import render
 from modules.portstatus.models import swtable
 from modules.masterpage.views import json_response
 
+import logging
+
+errorLog = logging.getLogger('custom-error')
+
 
 def connection_mysql():
     remote_connection = pymysql.connect(host='localhost', user="testuser", password="123123", database="test_db",
@@ -33,18 +37,21 @@ def musteriList(request):
 
     endLimit = int(page) * size
 
-    print(startLimit)
-    print(endLimit)
+    # print(startLimit)
+    # print(endLimit)
 
     sqlquery = """
     SELECT * FROM musteri LIMIT {size} OFFSET {startLimit};
     """.format(size=size, startLimit=startLimit)
 
-    print(sqlquery)
+    # print(sqlquery)
+    # infoLog = logging.getLogger('custom-info')
+    errorLog.error(sqlquery)
+
     cur.execute(sqlquery)
     results = cur.fetchall()
-    print(results)
-    print(len(results))
+    # print(results)
+    # print(len(results))
 
     countSqlQuery = """
     select count(*) as total from musteri
@@ -113,7 +120,8 @@ def apiMusteriEkle(request):
         remote_connection.commit()
         return json_response(status=True, message='Data Ekleme Başarılı', data=[])
     except Exception as e:
-        print(e)
+        # print(e)
+        errorLog.error(e)
         return json_response(status=False, message='Bir Hata Meydana Geldi.', data=[])
 
 
@@ -143,3 +151,35 @@ def musteriRevize(request):
     }
 
     return render(request, 'musteri/musteri-revize.html', context)
+
+
+def musterFilter(request):
+    ipKeyword = request.GET.get('ipKeyword')
+    swKeyword = request.GET.get('swKeyword')
+
+    cur = connection_mysql()[0]
+    sqlquery = """ 
+        SELECT * FROM musteri where 
+            (
+            ip like '%{ip}%'
+            and 
+            switch like '%{sw}%'
+            );
+        """.format(ip=ipKeyword, sw=swKeyword)
+    cur.execute(sqlquery)
+    results = cur.fetchall()
+
+    return json_response(status=True, message='', data=results)
+
+
+def musteriDataTable(request):
+    cur = connection_mysql()[0]
+    sqlquery = """
+        SELECT * FROM musteri 
+        """
+    cur.execute(sqlquery)
+    results = cur.fetchall()
+    context = {
+        "data": results,
+    }
+    return render(request, 'musteri/musteri-data-table.html', context)

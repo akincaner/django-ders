@@ -147,39 +147,39 @@
         var selectedMusteri;
         var musteriBilgileri = {{ musteriData|safe }}
 
-            // id="musteri-sec" olan eleman değiştiğinde :
-            $(document).on('change', '#musteri-sec', function (event) {
-                selectedMusteri = musteriBilgileri.find(function (eleman) {
-                    if (event.target.value == eleman.id) {
-                        return true;
-                    }
-                });
-
-                console.log(selectedMusteri);
-                // id="name" olan elemanın value değerini parantez içindeki değer ile değiştir :
-                // # işareti id si ..... olan elemanı getirir
-
-                $('#name').val(selectedMusteri.name);
-                $('#vlan').val(selectedMusteri.vlan);
-                $('#subnetMask').val(selectedMusteri.ip.split('/')[1]);
-                $('#selectedIp').val(selectedMusteri.ip.split('/')[0]);
-                $('#switch').val(selectedMusteri.switch);
-
-
-                var selectedIps = ipData.filter(function (element) {
-                    if (selectedMusteri.ip.split('/')[1] == element.split('/')[1]) {
-                        return true;
-                    }
-                })
-                var html = '<option selected="" disabled="" value="">Ip Seçiniz</option>';
-                for (var item of selectedIps) {
-                    html += '<option value="' + item + '">' + item.split('/')[0] + '</option>';
+        // id="musteri-sec" olan eleman değiştiğinde :
+        $(document).on('change', '#musteri-sec', function (event) {
+            selectedMusteri = musteriBilgileri.find(function (eleman) {
+                if (event.target.value == eleman.id) {
+                    return true;
                 }
-                $('#ipSelect').html(html);
-
-                $('#ipSelect').val(selectedMusteri.ip);
-
             });
+
+            console.log(selectedMusteri);
+            // id="name" olan elemanın value değerini parantez içindeki değer ile değiştir :
+            // # işareti id si ..... olan elemanı getirir
+
+            $('#name').val(selectedMusteri.name);
+            $('#vlan').val(selectedMusteri.vlan);
+            $('#subnetMask').val(selectedMusteri.ip.split('/')[1]);
+            $('#selectedIp').val(selectedMusteri.ip.split('/')[0]);
+            $('#switch').val(selectedMusteri.switch);
+
+
+            var selectedIps = ipData.filter(function (element) {
+                if (selectedMusteri.ip.split('/')[1] == element.split('/')[1]) {
+                    return true;
+                }
+            })
+            var html = '<option selected="" disabled="" value="">Ip Seçiniz</option>';
+            for (var item of selectedIps) {
+                html += '<option value="' + item + '">' + item.split('/')[0] + '</option>';
+            }
+            $('#ipSelect').html(html);
+
+            $('#ipSelect').val(selectedMusteri.ip);
+
+        });
 
 
         var request = $.ajax({
@@ -271,7 +271,9 @@
                 myModal.show();
             })
 
-            // Modal Kapandığında Çalışır.
+        }
+
+         // Modal Kapandığında Çalışır.
             userInfoModal.addEventListener('hide.bs.modal', event => {
 
             if (apiStatus) {
@@ -284,7 +286,6 @@
 
 
         })
-        }
 
     </script>
 

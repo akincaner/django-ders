@@ -12,6 +12,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 
 from pathlib import Path
 import os
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -123,7 +124,6 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-
 STATICFILES_DIRS = (
     os.path.join(os.path.join(BASE_DIR, 'templates'), 'static'),
 )
@@ -134,3 +134,45 @@ STATICFILES_DIRS = (
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # APPEND_SLASH=False
+
+
+custom_log_path = os.path.join(BASE_DIR, 'logs/')
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(process)d %(thread)d %(module)s %(filename)s %(funcName)s %(lineno)s %(pathname)s %(name)s %(message)s'
+        },
+        'simple': {
+            'format': '%(asctime)s %(message)s'
+        },
+    },
+    'handlers': {
+        'django': {
+            'level': 'INFO',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(custom_log_path, 'django.log'),
+            'formatter': 'verbose'
+        },
+        'custom-error': {
+            'level': 'ERROR',
+            'class': 'logging.FileHandler',
+            'filename': os.path.join(custom_log_path, 'custom-error.log'),
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'custom-error': {
+            'handlers': ['custom-error'],
+        },
+        'django': {
+            'handlers': ['django'],
+            'level': 'INFO',
+            'propagate': True,
+        },
+
+    }
+
+}

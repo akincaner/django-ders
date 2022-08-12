@@ -29,6 +29,11 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
 
+    <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.12.1/css/jquery.dataTables.css">
+    <script type="text/javascript" charset="utf8"
+            src="https://cdn.datatables.net/1.12.1/js/jquery.dataTables.js"></script>
+
+
     <link href="/static/css/style.css" rel="stylesheet"/>
 
 </head>
@@ -88,7 +93,8 @@
                 class="fa fa-bell fa-fw"></i>  Müşteri Revize Et</a>
 
 
-        <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-bank fa-fw"></i>  General</a>
+        <a href="/musteri/musteri-data-table/" class="w3-bar-item w3-button w3-padding {% if request.path == '/musteri/musteri-data-table/' %} w3-blue {% endif %}"><i class="fa fa-bank fa-fw"></i>  Müşteri Data Table</a>
+
         <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-history fa-fw"></i>  History</a>
         <a href="#" class="w3-bar-item w3-button w3-padding"><i class="fa fa-cog fa-fw"></i>  Settings</a><br><br>
     </div>

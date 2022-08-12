@@ -1,0 +1,38 @@
+{% extends "masterpage.html" %}
+
+
+{% block ContentHolder %}
+
+    <div class="container">
+        <table class="table table-striped" id="myDataTable">
+            <thead>
+            <tr>
+                <th>İsim</th>
+                <th>Vlan</th>
+                <th>Ip</th>
+                <th>Switch</th>
+            </tr>
+            </thead>
+            <tbody id="table-body">
+            {% for item in data %}
+                <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.vlan }}</td>
+                    <td>{{ item.ip }}</td>
+                    <td>{{ item.switch }}</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+
+    <script>
+        $(document).ready(function () {
+            $('#myDataTable').DataTable();
+        });
+    </script>
+
+
+
+{% endblock ContentHolder %}
